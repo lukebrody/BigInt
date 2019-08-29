@@ -6,6 +6,8 @@
 //  Copyright © 2016-2017 Károly Lőrentey.
 //
 
+import Foundation
+
 
 // Little-endian to big-endian
 struct Units<Unit: FixedWidthInteger, Words: RandomAccessCollection>: RandomAccessCollection
@@ -141,15 +143,24 @@ extension BigInt: Codable {
 
 extension BigUInt: Codable {
     public init(from decoder: Decoder) throws {
-        let value = try BigInt(from: decoder)
-        guard value.sign == .plus else {
-            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath,
-                                                    debugDescription: "BigUInt cannot hold a negative value"))
+        let container = try decoder.singleValueContainer()
+        let data = try container.decode(Data.self)
+        guard data.count % MemoryLayout<UInt64>.size == 0 else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Data isn't some multiple of UInt64.size")
         }
-        self = value.magnitude
+
+        let words: [UInt64] = data.withUnsafeBytes {
+            Array($0.bindMemory(to: UInt64.self))
+        }
+
+        self.init(words: words.map { UInt($0) })
     }
 
     public func encode(to encoder: Encoder) throws {
-        try BigInt(sign: .plus, magnitude: self).encode(to: encoder)
+        var container = encoder.singleValueContainer()
+        // Store words as UInt64s in a big data block, and just encode that
+        let words = self.words.map { UInt64($0) }
+        let data = words.withUnsafeBufferPointer { Data(buffer: $0) }
+        try container.encode(data)
     }
 }
