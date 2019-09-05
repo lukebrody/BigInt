@@ -61,7 +61,7 @@ extension BigInt {
         let right = rhs.words
         // Note we aren't using left.count/right.count here; we account for the sign bit separately later.
         let count = Swift.max(lhs.magnitude.count, rhs.magnitude.count)
-        var words: [UInt] = []
+        var words: ContiguousArray<UInt> = []
         words.reserveCapacity(count)
         for i in 0 ..< count {
             words.append(left[i] & right[i])
@@ -78,7 +78,7 @@ extension BigInt {
         let right = rhs.words
         // Note we aren't using left.count/right.count here; we account for the sign bit separately later.
         let count = Swift.max(lhs.magnitude.count, rhs.magnitude.count)
-        var words: [UInt] = []
+        var words: ContiguousArray<UInt> = []
         words.reserveCapacity(count)
         for i in 0 ..< count {
             words.append(left[i] | right[i])
@@ -95,7 +95,7 @@ extension BigInt {
         let right = rhs.words
         // Note we aren't using left.count/right.count here; we account for the sign bit separately later.
         let count = Swift.max(lhs.magnitude.count, rhs.magnitude.count)
-        var words: [UInt] = []
+        var words: ContiguousArray<UInt> = []
         words.reserveCapacity(count)
         for i in 0 ..< count {
             words.append(left[i] ^ right[i])

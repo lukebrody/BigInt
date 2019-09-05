@@ -54,7 +54,7 @@ extension BigInt {
             self.init(sign: .plus, magnitude: BigUInt(source))
         }
         else {
-            var words = Array(source.words)
+            var words = ContiguousArray(source.words)
             words.twosComplement()
             self.init(sign: .minus, magnitude: BigUInt(words: words))
         }

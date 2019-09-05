@@ -6,7 +6,7 @@
 //  Copyright © 2016-2017 Károly Lőrentey.
 //
 
-extension Array where Element == UInt {
+extension ContiguousArray where Element == UInt {
     mutating func twosComplement() {
         var increment = true
         for i in 0 ..< self.count {
@@ -105,7 +105,7 @@ extension BigUInt {
     public init<Words: Sequence>(words: Words) where Words.Element == Word {
         let uc = words.underestimatedCount
         if uc > 2 {
-            self.init(words: Array(words))
+            self.init(words: ContiguousArray(words))
         }
         else {
             var it = words.makeIterator()
@@ -190,7 +190,7 @@ extension BigInt {
     }
 
     public init<S: Sequence>(words: S) where S.Element == Word {
-        var words = Array(words)
+        var words = ContiguousArray(words)
         if (words.last ?? 0) >> (Word.bitWidth - 1) == 0 {
             self.init(sign: .plus, magnitude: BigUInt(words: words))
         }

@@ -28,7 +28,7 @@ public struct BigUInt: UnsignedInteger {
     }
 
     internal fileprivate (set) var kind: Kind // Internal for testing only
-    internal fileprivate (set) var storage: [Word] // Internal for testing only; stored separately to prevent COW copies
+    internal fileprivate (set) var storage: ContiguousArray<Word> // Internal for testing only; stored separately to prevent COW copies
 
     /// Initializes a new BigUInt with value 0.
     public init() {
@@ -47,13 +47,13 @@ public struct BigUInt: UnsignedInteger {
     }
 
     /// Initializes a new BigUInt with the specified digits. The digits are ordered from least to most significant.
-    public init(words: [Word]) {
+    public init(words: ContiguousArray<Word>) {
         self.kind = .array
         self.storage = words
         normalize()
     }
 
-    internal init(words: [Word], from startIndex: Int, to endIndex: Int) {
+    internal init(words: ContiguousArray<Word>, from startIndex: Int, to endIndex: Int) {
         self.kind = .slice(from: startIndex, to: endIndex)
         self.storage = words
         normalize()
@@ -95,7 +95,7 @@ extension BigUInt {
                 : []
         case let .slice(from: start, to: end):
             kind = .array
-            storage = Array(storage[start ..< end])
+            storage = ContiguousArray(storage[start ..< end])
         case .array:
             break
         }
@@ -120,7 +120,7 @@ extension BigUInt {
             }
         case let .slice(from: start, to: end):
             kind = .array
-            var words: [Word] = []
+            var words: ContiguousArray<Word> = []
             words.reserveCapacity(Swift.max(end - start, minimumCapacity))
             words.append(contentsOf: storage[start ..< end])
             storage = words
@@ -331,7 +331,7 @@ extension BigUInt {
             }
             kind = .array
         case let .slice(from: start, to: end):
-            var words: [Word] = []
+            var words: ContiguousArray<Word> = []
             words.reserveCapacity(amount + count)
             words.append(contentsOf: repeatElement(0, count: amount))
             words.append(contentsOf: storage[start ..< end])
