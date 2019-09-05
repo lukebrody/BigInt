@@ -18,7 +18,7 @@ public struct BigUInt: UnsignedInteger {
     public typealias Word = UInt
 
     /// The storage variants of a `BigUInt`.
-    enum Kind {
+    public enum Kind {
         /// Value consists of the two specified words (low and high). Either or both words may be zero.
         case inline(Word, Word)
         /// Words are stored in a slice of the storage array.
@@ -27,13 +27,18 @@ public struct BigUInt: UnsignedInteger {
         case array
     }
 
-    internal fileprivate (set) var kind: Kind // Internal for testing only
-    internal fileprivate (set) var storage: ContiguousArray<Word> // Internal for testing only; stored separately to prevent COW copies
+    public fileprivate (set) var kind: Kind // Internal for testing only
+    public fileprivate (set) var storage: ContiguousArray<Word> // Internal for testing only; stored separately to prevent COW copies
 
     /// Initializes a new BigUInt with value 0.
     public init() {
         self.kind = .inline(0, 0)
         self.storage = []
+    }
+
+    public init(kind: Kind, storage: ContiguousArray<Word>) {
+        self.kind = kind
+        self.storage = storage
     }
 
     internal init(word: Word) {
